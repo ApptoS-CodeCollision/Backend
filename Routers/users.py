@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from DB import utils, users
 from Schema import base_schemas
+from Blockchain import contract
 
 
 router = APIRouter()
@@ -34,6 +35,7 @@ def add_user(user: base_schemas.User, db: Session = Depends(utils.get_db)):
         raise HTTPException(status_code=400, detail="User Already Exists")
     
     ########### BlockChain에 유저 정보 저장 불필요? #################
+    contract.register_user()
 
 
     return users.add_user(db, user = user)

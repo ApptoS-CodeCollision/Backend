@@ -5,6 +5,7 @@ from DB import chats, utils, users, ais
 from Schema import base_schemas, chat_schemas
 from AI import crud
 from AI.main import rag_qa
+from Blockchain import contract
 
 router = APIRouter()
 
@@ -96,6 +97,7 @@ def create_chat_message(chat_message_input: chat_schemas.ChatMessageCreate, chat
     )
     
     ############ blockchain 에서 pay UPDATE 하기 #############
+    contract.pay_for_usage()
 
 
 

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from DB import utils, users, ais, rags
 from Schema import base_schemas, ai_schemas
 from AI import crud
+from Blockchain import contract
 
 import random
 
@@ -81,7 +82,8 @@ def create_ai(ai: ai_schemas.AICreate, db: Session = Depends(utils.get_db)):
     # print("embed", embed[0][0])
 
     ######## 블록체인에 EMBEDDING 저장 #########
-
+    contract.register_ai()
+    contract.store_embedding_data()
 
 
 
