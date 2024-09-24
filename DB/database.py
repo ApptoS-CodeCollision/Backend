@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # SQLAlchemy 사용할 DB URL 생성하기
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:1234@localhost:5432/postgres"
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:1234@localhost:5432/apptos"
 
 # SQLAlchemy engine 생성하기
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
