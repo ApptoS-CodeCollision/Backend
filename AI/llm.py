@@ -10,8 +10,8 @@ openai = OpenAI()
 
 embeddings = OpenAIEmbeddings()
 
-template = """You are a helpful assistant that is an expert at extracting the most useful information from a given text.
- Also bring in extra relevant information to the user query from outside the given context.
+template = """You are a helpful assistant with expertise in extracting the most relevant information from any given context.
+Based on the context provided, analyze it to find the answer and respond accordingly, aligned with the role defined.
 Context: {context}
 
 Question: {question}

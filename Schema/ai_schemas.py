@@ -11,7 +11,9 @@ class AICreate(BaseModel):
     introductions: str
     rag_contents: str
     rag_comments: str
+    examples : str
     created_at: Optional[datetime] = None 
+
 
 class AIRead(base_schemas.AI):
     rags: List[base_schemas.RAG]

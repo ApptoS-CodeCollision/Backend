@@ -2,7 +2,7 @@ from typing import List
 from sqlalchemy.orm import Session
 
 from DB import models
-from Schema import base_schemas
+from Schema import base_schemas, user_schemas
 
 def get_users(db: Session, offset: int, limit: int) -> List[models.UserTable]:
     return db.query(models.UserTable).offset(offset).limit(limit - offset).all()

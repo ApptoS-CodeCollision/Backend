@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from DB import utils, users
-from Schema import base_schemas
+from Schema import base_schemas, user_schemas
 
 
 router = APIRouter()
@@ -38,8 +38,35 @@ def add_user(user: base_schemas.User, db: Session = Depends(utils.get_db)):
 
     return users.add_user(db, user = user)
 
+
+@router.post("/charge/{user_address}", response_model=bool)
+def charge_user(user_address: str, db: Session = Depends(utils.get_db)):
+    ########### BlockChain에 충전하기 위한 로직 #################
+    # 여기에 블록체인 충전 로직을 추가하세요.
+
+    ##### Test ######
+    # 사용자의 정보를 가져오기
+    user_info = users.get_user(db=db, user_address=user_address)
+    
+    # 사용자가 존재하지 않으면 예외 발생
+    if not user_info:
+        raise HTTPException(status_code=400, detail="User Doesn't Exist")
+    
+    # 사용자의 trial 값을 업데이트
+    user_info.trial = 10
+    
+    # DB에 변경 사항 반영
+    try:
+        db.commit()  # DB 세션에 커밋하여 업데이트 반영
+        db.refresh(user_info)  # 최신 데이터를 다시 가져옴
+        return True  # 성공 시 True 반환
+    except Exception as e:
+        db.rollback()  # 오류 발생 시 롤백
+        raise HTTPException(status_code=500, detail="Failed to update user: " + str(e))
+
+
 @router.put("/", response_model=base_schemas.User)
-def update_user(user: base_schemas.User, db: Session = Depends(utils.get_db)):
+def update_user(user: user_schemas.UserUpdate, db: Session = Depends(utils.get_db)):
     check_user = users.check_user_exists(db=db, user_address=user.user_address)
     if not check_user:
         raise HTTPException(status_code=400, detail="User Doesn't Exists")

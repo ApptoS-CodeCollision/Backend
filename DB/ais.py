@@ -99,6 +99,7 @@ def get_today_ais(db: Session, user_address:str) -> ai_schemas.AIReadList:
     return ai_schemas.AIReadList(ais=ai_list) 
 
 def search_ai_by_name(db: Session, name: str, user_address : str) -> ai_schemas.AIReadList:
+
     ais = db.query(models.AITable).filter(models.AITable.name.like(f"%{name}%")).all()
 
     ai_list = []  # 결과를 담을 리스트
