@@ -24,7 +24,7 @@ prompt = PromptTemplate(
 )
 
 # 5. Function to generate an answer using the retrieved documents
-def generate_answer(question, retrieved_docs):
+def generate_answer(question, role, retrieved_docs):
     # Combine the content of the retrieved documents into a single context string
     context = "\n\n".join([doc.page_content for doc in retrieved_docs])
     
@@ -36,10 +36,10 @@ def generate_answer(question, retrieved_docs):
     response = openai.chat.completions.create(
         model="gpt-4",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": role},
             {"role": "user", "content": final_prompt}
         ],
         temperature=0.7,
-        max_tokens=512
+        max_tokens=4096
     )
     return response

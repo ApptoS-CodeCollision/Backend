@@ -19,6 +19,7 @@ def create_ai(db: Session,ai_id:str, ai: ai_schemas.AICreate):
         profile_image_url = ai.profile_image_url,
         category = ai.category,
         introductions = ai.introductions,
+        examples = ai.examples
     )
 
     db_ai = models.AITable(**aiDB.model_dump())
