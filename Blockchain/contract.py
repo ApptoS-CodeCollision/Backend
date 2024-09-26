@@ -1,5 +1,6 @@
 import subprocess
 from Blockchain import utils
+import json
 
 CONTRACT_ADDRESS = "0xee471cd65d7158d1800576b9d072f49502f48499ee430ed4f1dbcc61b2209244"
 MODULE = "reward"
@@ -111,7 +112,6 @@ def request_faucet(consumer_obj_address: str) -> str:
   print("stderr:", stderr)
   
   return tx_hash
-  # return ""
 
 
 # View functions
@@ -122,6 +122,11 @@ def view_exists_creator_at(creator_obj_address: str):
       "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::exists_creator_at",
       "--args", f"address:{creator_obj_address}"
   ]
+  result = subprocess.run(command, capture_output=True, text=True)
+  json_output = json.loads(result.stdout)
+  print(json_output)
+  return str(json_output["Result"][0])
+
 
 def view_exists_consumer_at(consumer_obj_address: str):
   command = [
@@ -129,6 +134,10 @@ def view_exists_consumer_at(consumer_obj_address: str):
       "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::exists_consumer_at",
       "--args", f"address:{consumer_obj_address}"
   ]
+  result = subprocess.run(command, capture_output=True, text=True)
+  json_output = json.loads(result.stdout)
+  print(json_output)
+  return str(json_output["Result"][0])
 
 def view_contain_ai(creator_obj_address: str, ai_id: str):
   command = [
@@ -136,6 +145,10 @@ def view_contain_ai(creator_obj_address: str, ai_id: str):
       "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::contain_ai",
       "--args", f"address:{creator_obj_address}", f"String:{ai_id}"
   ]
+  result = subprocess.run(command, capture_output=True, text=True)
+  json_output = json.loads(result.stdout)
+  print(json_output)
+  return str(json_output["Result"][0])
 
 def view_get_ai_rewards(creator_obj_address: str, ai_id: str):
   command = [
@@ -143,6 +156,10 @@ def view_get_ai_rewards(creator_obj_address: str, ai_id: str):
       "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::get_ai_rewards",
       "--args", f"address:{creator_obj_address}", f"String:{ai_id}"
   ]
+  result = subprocess.run(command, capture_output=True, text=True)
+  json_output = json.loads(result.stdout)
+  print(json_output)
+  return str(json_output["Result"][0])
 
 def view_get_consumer_balance(consumer_obj_address: str):
   command = [
@@ -150,6 +167,10 @@ def view_get_consumer_balance(consumer_obj_address: str):
       "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::get_consumer_balance",
       "--args", f"address:{consumer_obj_address}"
   ]
+  result = subprocess.run(command, capture_output=True, text=True)
+  json_output = json.loads(result.stdout)
+  print(json_output)
+  return str(json_output["Result"][0])
 
 def view_get_free_trial_count(consumer_obj_address: str):
   command = [
@@ -157,4 +178,8 @@ def view_get_free_trial_count(consumer_obj_address: str):
       "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::get_free_trial_count",
       "--args", f"address:{consumer_obj_address}"
   ]
+  result = subprocess.run(command, capture_output=True, text=True)
+  json_output = json.loads(result.stdout)
+  print(json_output)
+  return str(json_output["Result"][0])
 

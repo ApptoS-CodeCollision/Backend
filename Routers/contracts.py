@@ -8,7 +8,7 @@ router = APIRouter()
 
 @router.post("/register_user", response_model=bool)
 def register_user(
-    user_address: str = Query(0, description="user address"),
+    user_address: str = Query("", description="user address"),
     db: Session = Depends(utils.get_db)
 ):
     creator_obj_address, consumer_obj_addrsss = contract.register_user(user_address=user_address)
@@ -21,9 +21,9 @@ def register_user(
 
 @router.post("/register_ai", response_model=str)
 def register_ai(
-    user_address: str = Query(0, description="user address"),
-    ai_id: str = Query(0, description="ai id"),
-    rag_hash: str = Query(0, description="rag hash"),
+    user_address: str = Query("", description="user address"),
+    ai_id: str = Query("", description="ai id"),
+    rag_hash: str = Query("", description="rag hash"),
     db: Session = Depends(utils.get_db)
 ):
     # 임시 용 creator_obj_address (나중에 제거)
@@ -43,9 +43,9 @@ def register_ai(
 
 @router.post("/store_embedding_data", response_model=str)
 def store_embedding_data(
-    user_address: str = Query(0, description="user address"),
-    ai_id: str = Query(0, description="ai id"),
-    rag_hash: str = Query(0, description="rag hash"),
+    user_address: str = Query("", description="user address"),
+    ai_id: str = Query("", description="ai id"),
+    rag_hash: str = Query("", description="rag hash"),
     db: Session = Depends(utils.get_db)
 ):
     # 임시 용 creator_obj_address (나중에 제거)
@@ -65,9 +65,9 @@ def store_embedding_data(
 
 @router.post("/pay_for_usage", response_model=str)
 def pay_for_usage(
-    user_address: str = Query(0, description="user address"),
-    ai_id: str = Query(0, description="ai id"),
-    amount: int = Query(0, description="amount"),
+    user_address: str = Query("", description="user address"),
+    ai_id: str = Query("", description="ai id"),
+    amount: int = Query("", description="amount"),
     db: Session = Depends(utils.get_db)
 ):
     # 임시 용(나중에 제거)
@@ -88,8 +88,8 @@ def pay_for_usage(
 
 @router.post("/claim_rewards_by_ai", response_model=str)
 def claim_rewards_by_ai(
-    user_address: str = Query(0, description="user address"),
-    ai_id: str = Query(0, description="ai id"),
+    user_address: str = Query("", description="user address"),
+    ai_id: str = Query("", description="ai id"),
     db: Session = Depends(utils.get_db)
 ):
     # 임시 용 creator_obj_address (나중에 제거)
@@ -109,7 +109,7 @@ def claim_rewards_by_ai(
 
 @router.post("/request_faucet", response_model=str)
 def request_faucet(
-    user_address: str = Query(0, description="user address"),
+    user_address: str = Query("", description="user address"),
     db: Session = Depends(utils.get_db)
 ):
     # 임시 용 consumer_obj_address (나중에 제거)
@@ -134,26 +134,70 @@ def recharge_consumer_balance_for_testing():
 
 
 @router.get("/exists_creator_at", response_model=str)
-def view_exists_creator_at():
-    return contract.view_exists_creator_at()
+def view_exists_creator_at(
+    user_address: str = Query("", description="user address"),
+    db: Session = Depends(utils.get_db)
+):
+    # 임시 용 creator_obj_address (나중에 제거)
+    # DB User table에서 검색해서 creator_obj_address 가져와서 사용
+    creator_obj_address="0x32b0a3f384eab8bf44ad12121d4cfc04907b72dd8bb0c8bbf9147aa92e654e80"
+
+    return contract.view_exists_creator_at(creator_obj_address=creator_obj_address)
 
 @router.get("/exists_consumer_at", response_model=str)
-def view_exists_consumer_at():
-    return contract.view_exists_consumer_at()
+def view_exists_consumer_at(
+    user_address: str = Query("", description="user address"),
+    db: Session = Depends(utils.get_db)
+):
+    # 임시 용 consumer_obj_address (나중에 제거)
+    # DB User table에서 검색해서 consumer_obj_address 가져와서 사용
+    consumer_obj_address="0x235c827ee71b580d8e2fb91f40a257e48c112d69dd8a1e63c365894998b7bfbf"
+
+    return contract.view_exists_consumer_at(consumer_obj_address=consumer_obj_address)
 
 @router.get("/contain_ai", response_model=str)
-def view_contain_ai():
-    return contract.view_contain_ai()
+def view_contain_ai(
+    user_address: str = Query("", description="user address"),
+    ai_id: str = Query("", description="ai id"),
+    db: Session = Depends(utils.get_db)
+):
+    # 임시 용 creator_obj_address (나중에 제거)
+    # DB User table에서 검색해서 creator_obj_address 가져와서 사용
+    creator_obj_address="0x32b0a3f384eab8bf44ad12121d4cfc04907b72dd8bb0c8bbf9147aa92e654e80"
+
+    return contract.view_contain_ai(creator_obj_address=creator_obj_address, ai_id=ai_id)
 
 @router.get("/ai_rewards", response_model=str)
-def view_get_ai_rewards():
-    return contract.view_get_ai_rewards()
+def view_get_ai_rewards(
+    user_address: str = Query("", description="user address"),
+    ai_id: str = Query("", description="ai id"),
+    db: Session = Depends(utils.get_db)
+):
+    # 임시 용 creator_obj_address (나중에 제거)
+    # DB User table에서 검색해서 creator_obj_address 가져와서 사용
+    creator_obj_address="0x32b0a3f384eab8bf44ad12121d4cfc04907b72dd8bb0c8bbf9147aa92e654e80"
+
+    return contract.view_get_ai_rewards(creator_obj_address=creator_obj_address, ai_id=ai_id)
 
 @router.get("/consumer_balance", response_model=str)
-def view_get_consumer_balance():
-    return contract.view_get_consumer_balance()
+def view_get_consumer_balance(
+    user_address: str = Query("", description="user address"),
+    db: Session = Depends(utils.get_db)
+):
+    # 임시 용 consumer_obj_address (나중에 제거)
+    # DB User table에서 검색해서 consumer_obj_address 가져와서 사용
+    consumer_obj_address="0x235c827ee71b580d8e2fb91f40a257e48c112d69dd8a1e63c365894998b7bfbf"
+
+    return contract.view_get_consumer_balance(consumer_obj_address=consumer_obj_address)
 
 @router.get("/free_trial_count", response_model=str)
-def view_get_free_trial_count():
-    return contract.view_get_free_trial_count()
+def view_get_free_trial_count(
+    user_address: str = Query("", description="user address"),
+    db: Session = Depends(utils.get_db)
+):
+    # 임시 용 consumer_obj_address (나중에 제거)
+    # DB User table에서 검색해서 consumer_obj_address 가져와서 사용
+    consumer_obj_address="0x235c827ee71b580d8e2fb91f40a257e48c112d69dd8a1e63c365894998b7bfbf"
+
+    return contract.view_get_free_trial_count(consumer_obj_address=consumer_obj_address)
 
