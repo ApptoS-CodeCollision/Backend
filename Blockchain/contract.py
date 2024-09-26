@@ -113,6 +113,21 @@ def request_faucet(consumer_obj_address: str) -> str:
   
   return tx_hash
 
+def use_free_trial(consumer_obj_address: str) -> str:
+  command = [
+      "aptos", "move", "run",
+      "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::use_free_trial",
+      "--args", f"address:{consumer_obj_address}",
+  ]
+  process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+  stdout, stderr = process.communicate(input="yes\n")
+  tx_hash = utils.parse_and_get_tx_hash(stdout)
+
+  print("stdout:", stdout)
+  print("stderr:", stderr)
+  
+  return tx_hash
+
 
 # View functions
 

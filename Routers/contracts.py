@@ -125,6 +125,24 @@ def request_faucet(
     )
     return tx_hash
 
+@router.post("/use_free_trial", response_model=str)
+def request_faucet(
+    user_address: str = Query("", description="user address"),
+    db: Session = Depends(utils.get_db)
+):
+    # 임시 용 consumer_obj_address (나중에 제거)
+    # DB User table에서 검색해서 consumer_obj_address 가져와서 사용
+    consumer_obj_address="0x235c827ee71b580d8e2fb91f40a257e48c112d69dd8a1e63c365894998b7bfbf"
+
+
+
+
+
+    tx_hash = contract.use_free_trial(
+        consumer_obj_address=consumer_obj_address,
+    )
+    return tx_hash
+
 @router.post("/test/recharge_consumer_balance_for_testing", response_model=str)
 def recharge_consumer_balance_for_testing():
     tx_hash = legacy.recharge_consumer_balance_for_testing(
