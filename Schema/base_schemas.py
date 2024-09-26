@@ -11,6 +11,7 @@ class User(BaseModel):
     country: str
     interest: str
     profile_image_url: str
+    trial : Optional[int]
 
     class Config:
         from_attributes = True
@@ -31,6 +32,7 @@ class AI(BaseModel):
     category: str
     introductions: str
     created_at: Optional[datetime] = None 
+    examples : str
 
     class Config:
         from_attributes = True

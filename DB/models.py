@@ -11,6 +11,7 @@ class UserTable(Base):
     country = Column(String, nullable=False)
     interest = Column(String, nullable=False)
     profile_image_url = Column(String, nullable=False)
+    trial = Column(Integer, default=0, nullable=False)
 
 class AITable(Base):
     __tablename__ = "aitable"
@@ -22,6 +23,7 @@ class AITable(Base):
     category = Column(String, nullable=False)
     introductions = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.now(), nullable=False)  # Use DateTime instead of String
+    examples = Column(String, nullable=True)
 
 class RAGTable(Base):
     __tablename__ = "ragtable"

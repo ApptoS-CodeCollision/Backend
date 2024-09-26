@@ -10,8 +10,8 @@ openai = OpenAI()
 
 embeddings = OpenAIEmbeddings()
 
-template = """You are a helpful assistant that is an expert at extracting the most useful information from a given text.
- Also bring in extra relevant information to the user query from outside the given context.
+template = """You are a helpful assistant with expertise in extracting the most relevant information from any given context.
+Based on the context provided, analyze it to find the answer and respond accordingly, aligned with the role defined.
 Context: {context}
 
 Question: {question}
@@ -24,7 +24,7 @@ prompt = PromptTemplate(
 )
 
 # 5. Function to generate an answer using the retrieved documents
-def generate_answer(question, retrieved_docs):
+def generate_answer(question, role, retrieved_docs):
     # Combine the content of the retrieved documents into a single context string
     context = "\n\n".join([doc.page_content for doc in retrieved_docs])
     
@@ -36,10 +36,10 @@ def generate_answer(question, retrieved_docs):
     response = openai.chat.completions.create(
         model="gpt-4",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": role},
             {"role": "user", "content": final_prompt}
         ],
         temperature=0.7,
-        max_tokens=512
+        max_tokens=4096
     )
     return response

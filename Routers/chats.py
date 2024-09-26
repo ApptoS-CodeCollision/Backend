@@ -73,10 +73,26 @@ def create_chat_message(chat_message_input: chat_schemas.ChatMessageCreate, chat
         raise HTTPException(status_code=400, detail="Chat Doesn't exists")
 
     chat = chats.get_chat_by_id(db, chat_id=chat_id)
+    ai_info = ais.get_ai_by_id(db=db, ai_id=chat.ai_id)
+    user_info = users.get_user(db =db, user_address =chat.user_address)
+    if user_info.trial > 0:
+        user_info.trial = user_info.trial - 1
+        try:
+            db.commit()  # DB 세션에 커밋하여 업데이트 반영
+            db.refresh(user_info)  # 최신 데이터를 다시 가져옴
+        except Exception as e:
+            db.rollback()  # 오류 발생 시 롤백
+            raise HTTPException(status_code=500, detail="Failed to update user: " + str(e))
+    else:
+        ################### 블록체인 pay for message ###################
+        print("Out of Trial")
+        pass
+
+
     question_message_id = utils.create_user_chat_message_id(chat_id=chat_id)
 
     #RAG 답변 생성해서 넣기
-    token, answer = rag_qa(chat_message_input.message, chat.ai_id)
+    token, answer = rag_qa(chat_message_input.message, chat.ai_id, ai_info.introductions)
 
     question_message = base_schemas.ChatMessage(
         id =  question_message_id,
