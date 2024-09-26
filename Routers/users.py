@@ -35,7 +35,7 @@ def add_user(user: base_schemas.User, db: Session = Depends(utils.get_db)):
         raise HTTPException(status_code=400, detail="User Already Exists")
     
     ########### BlockChain에 유저 정보 저장 불필요? #################
-    contract.register_user()
+    creator_obj, consumer_obj = contract.register_user()
 
 
     return users.add_user(db, user = user)
