@@ -126,7 +126,7 @@ def request_faucet(
     return tx_hash
 
 @router.post("/use_free_trial", response_model=str)
-def request_faucet(
+def use_free_trial(
     user_address: str = Query("", description="user address"),
     db: Session = Depends(utils.get_db)
 ):

@@ -79,13 +79,27 @@ def create_ai(ai: ai_schemas.AICreate, db: Session = Depends(utils.get_db)):
     # print("embed", embed[0][0])
 
     ######## 블록체인에 EMBEDDING 저장 #########
-    contract.register_ai()
-    contract.store_embedding_data()
+    ##### TODO : DB User table에서 검색해서 creator_obj_address 가져와서 사용
 
+    ##### 임시 용 creator_obj_address (나중에 제거)
+    creator_obj_address="0x32b0a3f384eab8bf44ad12121d4cfc04907b72dd8bb0c8bbf9147aa92e654e80",
 
+    tx_hash1 = contract.register_ai(
+        user_address=ai.creator_address,
+        creator_obj_address=creator_obj_address,
+        ai_id=ai_id,
+        rag_hash="rag_hash"
+    )
+
+    tx_hash2 = contract.store_embedding_data(
+        user_address=ai.creator_address,
+        creator_obj_address=creator_obj_address,
+        ai_id=ai_id,
+        rag_hash="rag_hash"
+    )
 
     # RAG 테이블에 기록
-    rags.create_rag(db=db, ai_id=ai_id, comments=ai.rag_comments, tx_hash="digest", faiss_id=faiss_id)
+    rags.create_rag(db=db, ai_id=ai_id, comments=ai.rag_comments, tx_hash=tx_hash2, faiss_id=faiss_id)
     
     return ais.create_ai(db=db, ai_id=ai_id, ai=ai)
 
@@ -106,12 +120,20 @@ def update_ai(ai_update: ai_schemas.AIUpdate, db: Session = Depends(utils.get_db
 
         ######## 블록체인에 EMBEDDING 저장 #########
 
+        ##### 임시 용 creator_obj_address (나중에 제거)
+        creator_obj_address="0x32b0a3f384eab8bf44ad12121d4cfc04907b72dd8bb0c8bbf9147aa92e654e80",
 
+        tx_hash = contract.store_embedding_data(
+            user_address=ai.creator_address,
+            creator_obj_address=creator_obj_address,
+            ai_id=ai.id,
+            rag_hash="rag_hash"
+        )
         
         if ai_update.rag_comments == None:
-          rags.create_rag(db=db, ai_id=ai_update.id, comments="", tx_hash="digest", faiss_id=faiss_id)
+          rags.create_rag(db=db, ai_id=ai_update.id, comments="", tx_hash=tx_hash, faiss_id=faiss_id)
         else:
-          rags.create_rag(db=db, ai_id=ai_update.id, comments=ai_update.rag_comments, tx_hash="digest", faiss_id=faiss_id)
+          rags.create_rag(db=db, ai_id=ai_update.id, comments=ai_update.rag_comments, tx_hash=tx_hash, faiss_id=faiss_id)
     
     return ais.update_ai(db=db, ai_update=ai_update)
 

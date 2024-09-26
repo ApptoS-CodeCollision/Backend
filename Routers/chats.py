@@ -84,7 +84,9 @@ def create_chat_message(chat_message_input: chat_schemas.ChatMessageCreate, chat
             db.rollback()  # 오류 발생 시 롤백
             raise HTTPException(status_code=500, detail="Failed to update user: " + str(e))
     else:
-        ################### 블록체인 pay for message ###################
+            
+
+
         print("Out of Trial")
         pass
 
@@ -113,7 +115,24 @@ def create_chat_message(chat_message_input: chat_schemas.ChatMessageCreate, chat
     )
     
     ############ blockchain 에서 pay UPDATE 하기 #############
-    contract.pay_for_usage()
+    ################### 블록체인 pay for message ###################
+
+    ##### TODO : DB User table에서 user_address 검색해서 consumer_obj_address 가져와서 사용
+
+    # 임시 용 consumer_obj_address (나중에 제거)
+    creator_obj_address="0x32b0a3f384eab8bf44ad12121d4cfc04907b72dd8bb0c8bbf9147aa92e654e80",
+    consumer_obj_address="0x235c827ee71b580d8e2fb91f40a257e48c112d69dd8a1e63c365894998b7bfbf"
+
+    free_trial_count = int(contract.view_get_free_trial_count(consumer_obj_address=consumer_obj_address))
+    if free_trial_count > 0 :
+        tx_hash = contract.use_free_trial(consumer_obj_address=consumer_obj_address)
+    else:
+        tx_hash = contract.pay_for_usage(
+            creator_obj_address=creator_obj_address,
+            ai_id=chat.ai_id,
+            consumer_obj_address=consumer_obj_address,
+            amount=token.prompt_tokens + token.completion_tokens
+        )
 
 
 
