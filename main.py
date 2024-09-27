@@ -3,7 +3,7 @@ from typing import List
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlalchemy.orm import Session
 
-from Routers import users, ais, chats, likes
+from Routers import contracts, users, ais, chats, likes
 
 # from DB import users, ais, chats, models, schemas, like
 from DB import models
@@ -12,6 +12,8 @@ from DB.database import engine
 from AI.crud import add_text, delete_text
 from AI.main import rag_qa
 from fastapi.middleware.cors import CORSMiddleware
+
+from Blockchain import contract, legacy
 
 import random
 from time import ctime
@@ -24,7 +26,8 @@ app = FastAPI()
 app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(ais.router, prefix="/ais", tags=["ais"])
 app.include_router(chats.router, prefix="/chats", tags=["chats"])
-app.include_router(likes.router, prefix="/likes", tags=["chats"])
+app.include_router(likes.router, prefix="/likes", tags=["likes"])
+app.include_router(contracts.router, prefix="/contracts", tags=["contracts"])
 
 app.add_middleware(
     CORSMiddleware,
