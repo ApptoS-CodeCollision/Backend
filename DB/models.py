@@ -11,7 +11,8 @@ class UserTable(Base):
     country = Column(String, nullable=False)
     interest = Column(String, nullable=False)
     profile_image_url = Column(String, nullable=False)
-    trial = Column(Integer, default=0, nullable=False)
+    creator_obj_address = Column(String, nullable=False)
+    consumer_obj_address = Column(String, nullable=False)
 
 class AITable(Base):
     __tablename__ = "aitable"

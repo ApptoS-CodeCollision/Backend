@@ -75,21 +75,6 @@ def create_chat_message(chat_message_input: chat_schemas.ChatMessageCreate, chat
     chat = chats.get_chat_by_id(db, chat_id=chat_id)
     ai_info = ais.get_ai_by_id(db=db, ai_id=chat.ai_id)
     user_info = users.get_user(db =db, user_address =chat.user_address)
-    if user_info.trial > 0:
-        user_info.trial = user_info.trial - 1
-        try:
-            db.commit()  # DB 세션에 커밋하여 업데이트 반영
-            db.refresh(user_info)  # 최신 데이터를 다시 가져옴
-        except Exception as e:
-            db.rollback()  # 오류 발생 시 롤백
-            raise HTTPException(status_code=500, detail="Failed to update user: " + str(e))
-    else:
-            
-
-
-        print("Out of Trial")
-        pass
-
 
     question_message_id = utils.create_user_chat_message_id(chat_id=chat_id)
 
@@ -113,27 +98,22 @@ def create_chat_message(chat_message_input: chat_schemas.ChatMessageCreate, chat
         message =  answer,
         completion_tokens= token.completion_tokens
     )
-    
+
     ############ blockchain 에서 pay UPDATE 하기 #############
-    ################### 블록체인 pay for message ###################
 
-    ##### TODO : DB User table에서 user_address 검색해서 consumer_obj_address 가져와서 사용
+    creator_info = users.get_user(db =db, user_address =ai_info.creator_address)
 
-    # 임시 용 consumer_obj_address (나중에 제거)
-    creator_obj_address="0x32b0a3f384eab8bf44ad12121d4cfc04907b72dd8bb0c8bbf9147aa92e654e80",
-    consumer_obj_address="0x235c827ee71b580d8e2fb91f40a257e48c112d69dd8a1e63c365894998b7bfbf"
-
-    free_trial_count = int(contract.view_get_free_trial_count(consumer_obj_address=consumer_obj_address))
+    free_trial_count = int(contract.view_get_free_trial_count(consumer_obj_address=user_info.consumer_obj_address))
+    print(free_trial_count)
     if free_trial_count > 0 :
-        tx_hash = contract.use_free_trial(consumer_obj_address=consumer_obj_address)
+        tx_hash = contract.use_free_trial(consumer_obj_address=user_info.consumer_obj_address)
     else:
         tx_hash = contract.pay_for_usage(
-            creator_obj_address=creator_obj_address,
+            creator_obj_address=creator_info.creator_obj_address,
             ai_id=chat.ai_id,
-            consumer_obj_address=consumer_obj_address,
+            consumer_obj_address=user_info.consumer_obj_address,
             amount=token.prompt_tokens + token.completion_tokens
         )
-
 
 
     return chats.create_chat_message(db=db, chat_message=answer_message)

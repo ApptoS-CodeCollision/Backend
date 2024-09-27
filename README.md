@@ -8,3 +8,6 @@ There are few steps to initiate our backend
 4. modify add_texts functions (add embeddings to return)
 
 python -m uvicorn main:app --reload --host=0.0.0.0 --port=4000
+python -m uvicorn main:app --reload --port=4000
+
+export PATH="/home/poqopo/.local/bin:$PATH"

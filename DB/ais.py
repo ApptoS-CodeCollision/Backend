@@ -145,6 +145,7 @@ def update_ai(db: Session, ai_update: ai_schemas.AIUpdate) -> ai_schemas.AIRead:
     models.AITable.profile_image_url: ai_update.profile_image_url,
     models.AITable.category: ai_update.category,
     models.AITable.introductions: ai_update.introductions,
+    models.AITable.examples : ai_update.examples
     })
     db.commit()
     return get_ai_by_id(db=db, ai_id=ai_update.id)

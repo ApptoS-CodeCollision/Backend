@@ -78,22 +78,18 @@ def create_ai(ai: ai_schemas.AICreate, db: Session = Depends(utils.get_db)):
     embed = crud.add_text([ai.rag_contents], [{"source" : ai_id}], [faiss_id])
     # print("embed", embed[0][0])
 
-    ######## 블록체인에 EMBEDDING 저장 #########
-    ##### TODO : DB User table에서 검색해서 creator_obj_address 가져와서 사용
-
-    ##### 임시 용 creator_obj_address (나중에 제거)
-    creator_obj_address="0x32b0a3f384eab8bf44ad12121d4cfc04907b72dd8bb0c8bbf9147aa92e654e80",
+    #### TODO : Embedding을 어떻게 넣을지 #######
 
     tx_hash1 = contract.register_ai(
         user_address=ai.creator_address,
-        creator_obj_address=creator_obj_address,
+        creator_obj_address=db_user.creator_obj_address,
         ai_id=ai_id,
         rag_hash="rag_hash"
     )
 
     tx_hash2 = contract.store_embedding_data(
         user_address=ai.creator_address,
-        creator_obj_address=creator_obj_address,
+        creator_obj_address=db_user.creator_obj_address,
         ai_id=ai_id,
         rag_hash="rag_hash"
     )
@@ -108,24 +104,27 @@ def update_ai(ai_update: ai_schemas.AIUpdate, db: Session = Depends(utils.get_db
     ai_exists = ais.check_ai_exists(db=db, ai_id=ai_update.id)
     if not ai_exists:
         raise HTTPException(status_code=400, detail="AI Not found")
-
+    
+    db_user = users.get_user(db, user_address=ai_update.creator_address)
+    if not db_user:
+        raise HTTPException(status_code=400, detail="You are not user")
+    
     ai = ais.get_ai_by_id(db, ai_id=ai_update.id)
     if ai.creator_address != ai_update.creator_address:
         raise HTTPException(status_code=400, detail="You are not the owner of AI")
+
+
 
     # AI 콘텐츠가 변경된 경우 add_text 호출
     if ai_update.rag_contents != "" and ai_update.rag_contents != None:
         faiss_id = ai.name + "tx" + str(random.random())
         embed = crud.add_text([ai_update.rag_contents], [{"source" : ai_update.id}], [faiss_id])
 
-        ######## 블록체인에 EMBEDDING 저장 #########
-
-        ##### 임시 용 creator_obj_address (나중에 제거)
-        creator_obj_address="0x32b0a3f384eab8bf44ad12121d4cfc04907b72dd8bb0c8bbf9147aa92e654e80",
+        ######## Todo : 어떻게 Embedding 저장할지 블록체인에 EMBEDDING 저장 #########
 
         tx_hash = contract.store_embedding_data(
             user_address=ai.creator_address,
-            creator_obj_address=creator_obj_address,
+            creator_obj_address=db_user.creator_obj_address,
             ai_id=ai.id,
             rag_hash="rag_hash"
         )
@@ -150,8 +149,8 @@ def delete_ai(ai_delete : ai_schemas.AIDelete, db: Session = Depends(utils.get_d
     deleted_ai = ais.delete_ai(db=db, ai_id=ai.id)
 
     ai_rags = rags.get_rags_by_aiid(db=db, ai_id=ai.id)
-    # ids = [i.faiss_id for i in ai_rags]
-    # crud.delete_text(ids)
+    ids = [i.faiss_id for i in ai_rags]
+    crud.delete_text(ids)
     rags.delete_raglogs(db=db, ai_id=ai.id)
 
     if not deleted_ai:

@@ -10,3 +10,15 @@ class UserUpdate(BaseModel):
     country: str
     interest: str
     profile_image_url: str
+
+
+class UserCreate(BaseModel):
+    user_address: str
+    nickname: str = '0.0'
+    gender: str
+    country: str
+    interest: str
+    profile_image_url: str
+
+class UserRead(base_schemas.User):
+    trial: int
