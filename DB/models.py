@@ -11,8 +11,7 @@ class UserTable(Base):
     country = Column(String, nullable=False)
     interest = Column(String, nullable=False)
     profile_image_url = Column(String, nullable=False)
-    creator_obj_address = Column(String, nullable=False)
-    consumer_obj_address = Column(String, nullable=False)
+    trial = Column(Integer, nullable=False)
 
 class AITable(Base):
     __tablename__ = "aitable"
@@ -55,6 +54,7 @@ class ChatMessageTable(Base):
     prompt_tokens = Column(Float, nullable=False)
     completion_tokens = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.now(), nullable=False)  # Use DateTime instead of String
+    tx = Column(String, nullable=True)
 
 class LikeTable(Base):
     __tablename__ = "liketable"

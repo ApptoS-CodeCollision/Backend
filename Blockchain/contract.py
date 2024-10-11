@@ -2,7 +2,7 @@ import subprocess
 from Blockchain import utils
 import json
 
-CONTRACT_ADDRESS = "0xee471cd65d7158d1800576b9d072f49502f48499ee430ed4f1dbcc61b2209244"
+CONTRACT_ADDRESS = "0x2f5bda3b810df4a9c45798bf149cadb830610b3eb241c7229065747eb1712f43"
 MODULE = "reward"
 
 def register_user(user_address:str) -> {str, str}:
@@ -33,12 +33,12 @@ def register_user(user_address:str) -> {str, str}:
   return creator_obj_address, consumer_obj_address
 
 
-def register_ai(user_address: str, creator_obj_address: str, ai_id: str, rag_hash: str) -> str:
+def register_ai(creator_address: str,  ai_id: str, prompt: str) -> str:
   command = [
       "aptos", "move", "run",
       "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::register_ai",
-      "--args", f"address:{user_address}",
-      f"address:{creator_obj_address}", f"String:{ai_id}", f"String:{rag_hash}"
+      "--args", f"address:{creator_address}",
+      f"address:{creator_address}", f"String:{ai_id}", f"String:{prompt}"
   ]
   process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
   stdout, stderr = process.communicate(input="yes\n")
@@ -49,12 +49,12 @@ def register_ai(user_address: str, creator_obj_address: str, ai_id: str, rag_has
 
   return tx_hash
   
-def store_embedding_data(user_address: str, creator_obj_address: str, ai_id: str, rag_hash: str) -> str:
+def store_rag_data(creator_address: str, ai_id: str, prompt: str) -> str:
   command = [
       "aptos", "move", "run",
-      "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::store_rag_hash_data",
-      "--args", f"address:{user_address}",
-      f"address:{creator_obj_address}", f"String:{ai_id}", f"String:{rag_hash}"
+      "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::store_rag_data",
+      "--args", f"address:{creator_address}",
+      f"address:{creator_address}", f"String:{ai_id}", f"String:{prompt}"
   ]
   process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
   stdout, stderr = process.communicate(input="yes\n")

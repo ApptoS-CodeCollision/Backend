@@ -91,29 +91,32 @@ def create_chat_message(chat_message_input: chat_schemas.ChatMessageCreate, chat
     chats.create_chat_message(db=db, chat_message=question_message)
 
     answer_message_id = utils.create_ai_chat_message_id(chat_id=chat_id)
-    answer_message = base_schemas.ChatMessage(
-        id =  answer_message_id,
-        chat_id =  chat_id,
-        sender_id =  chat_message_input.sender_id,
-        message =  answer,
-        completion_tokens= token.completion_tokens
-    )
 
-    ############ blockchain 에서 pay UPDATE 하기 #############
 
-    creator_info = users.get_user(db =db, user_address =ai_info.creator_address)
-
-    free_trial_count = int(contract.view_get_free_trial_count(consumer_obj_address=user_info.consumer_obj_address))
-    print(free_trial_count)
-    if free_trial_count > 0 :
-        tx_hash = contract.use_free_trial(consumer_obj_address=user_info.consumer_obj_address)
-    else:
+    if user_info.trial > 0 :
+        new_user_info = {**user_info, 'trial': user_info['trial'] - 1}
+        users.update_user(db, user_update = new_user_info)
         tx_hash = contract.pay_for_usage(
-            creator_obj_address=creator_info.creator_obj_address,
             ai_id=chat.ai_id,
-            consumer_obj_address=user_info.consumer_obj_address,
             amount=token.prompt_tokens + token.completion_tokens
         )
+        answer_message = base_schemas.ChatMessage(
+            id =  answer_message_id,
+            chat_id =  chat_id,
+            sender_id =  chat_message_input.sender_id,
+            message =  answer,
+            completion_tokens= token.completion_tokens,
+            tx = tx_hash
+        )
+    else:
 
+        answer_message = base_schemas.ChatMessage(
+            id =  answer_message_id,
+            chat_id =  chat_id,
+            sender_id =  chat_message_input.sender_id,
+            message =  answer,
+            completion_tokens= token.completion_tokens,
+            tx = ""
+        )
 
     return chats.create_chat_message(db=db, chat_message=answer_message)

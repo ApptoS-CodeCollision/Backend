@@ -11,8 +11,7 @@ class User(BaseModel):
     country: str
     interest: str
     profile_image_url: str
-    creator_obj_address : str
-    consumer_obj_address : str
+    trial : int = 5
 
     class Config:
         from_attributes = True
@@ -72,6 +71,7 @@ class ChatMessage(BaseModel):
     prompt_tokens : int = 0
     completion_tokens : int = 0
     created_at: Optional[datetime] = None 
+    tx : str
 
     class Config:
         from_attributes = True
