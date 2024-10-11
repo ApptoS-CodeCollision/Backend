@@ -8,17 +8,9 @@ from Blockchain import contract
 def get_users(db: Session, offset: int, limit: int) -> List[models.UserTable]:
     return db.query(models.UserTable).offset(offset).limit(limit - offset).all()
 
-def get_user(db: Session, user_address: str) -> user_schemas.UserRead:
+def get_user(db: Session, user_address: str) -> base_schemas.User:
     db_user =  db.query(models.UserTable).filter(models.UserTable.user_address == user_address).first()
-    # SQLAlchemy ORM 객체를 Pydantic 모델로 변환
-    user_dict = {column.name: getattr(db_user, column.name) for column in db_user.__table__.columns}
-    trial = contract.view_get_free_trial_count(consumer_obj_address = db_user.consumer_obj_address)
-    # base_schemas.User에 필요한 필드 전달
-    user = user_schemas.UserRead(
-        **user_dict,  # SQLAlchemy 객체 데이터를 언팩
-        trial=trial  # 추가 필드
-    )
-    return user
+    return db_user
 
 def check_user_exists(db: Session, user_address: str) -> bool:
     return db.query(models.UserTable).filter(models.UserTable.user_address == user_address).first() is not None

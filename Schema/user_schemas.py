@@ -19,6 +19,3 @@ class UserCreate(BaseModel):
     country: str
     interest: str
     profile_image_url: str
-
-class UserRead(base_schemas.User):
-    trial: int

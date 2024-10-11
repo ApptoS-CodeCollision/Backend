@@ -11,8 +11,6 @@ class User(BaseModel):
     country: str
     interest: str
     profile_image_url: str
-    creator_obj_address : str
-    consumer_obj_address : str
 
     class Config:
         from_attributes = True

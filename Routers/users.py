@@ -17,7 +17,7 @@ def get_users(
     res = users.get_users(db=db, offset=offset, limit=limit)
     return base_schemas.UserList(users=res)
 
-@router.get("/{user_address}", response_model=user_schemas.UserRead)
+@router.get("/{user_address}", response_model=base_schemas.User)
 def get_user(user_address : str, db: Session = Depends(utils.get_db)):
     check_user = users.check_user_exists(db=db, user_address=user_address)
     if not check_user:
@@ -33,19 +33,8 @@ def add_user(user: user_schemas.UserCreate, db: Session = Depends(utils.get_db))
     check_user = users.check_user_exists(db=db, user_address=user.user_address)
     if check_user:
         raise HTTPException(status_code=400, detail="User Already Exists")
-    
-    ##### TODO : User Table에 creator_obj_address 와 consumer_obj_address 넣어 줘야 함
-    creator_obj_address, consumer_obj_address = contract.register_user(user_address=user.user_address)
-    # User 데이터를 dict로 변환 후 추가 정보를 병합
-    user_dict = user.dict()  # user를 dict로 변환
-    db_user = base_schemas.User(
-        **user_dict,  # 딕셔너리를 언팩
-        creator_obj_address=creator_obj_address,
-        consumer_obj_address=consumer_obj_address,
-        trial=10
-    )
 
-    return users.add_user(db, user=db_user)
+    return users.add_user(db, user=user)
 
 
 @router.post("/charge/{user_address}", response_model=bool)
