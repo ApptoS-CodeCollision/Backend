@@ -86,24 +86,14 @@ def pay_for_usage(
     )
     return tx_hash
 
-@router.post("/claim_rewards_by_ai/", response_model=str)
+@router.post("/claim_rewards_by_ai/{user_address}/{ai_id}", response_model=str)
 def claim_rewards_by_ai(
-    user_address: str = Query("", description="user address"),
-    ai_id: str = Query("", description="ai id"),
-    db: Session = Depends(utils.get_db)
+    user_address: str,
+    ai_id: str,
 ):
-    # 임시 용 creator_obj_address (나중에 제거)
-    # DB User table에서 검색해서 creator_obj_address 가져와서 사용
-    creator_obj_address="0x32b0a3f384eab8bf44ad12121d4cfc04907b72dd8bb0c8bbf9147aa92e654e80",
-
-
-
-
-
     tx_hash = contract.claim_rewards_by_ai(
         user_address=user_address,
-        creator_obj_address=creator_obj_address,
-        ai_id="ptwptw",
+        ai_id=ai_id,
     )
     return tx_hash
 
@@ -128,10 +118,6 @@ def use_free_trial(
     # 임시 용 consumer_obj_address (나중에 제거)
     # DB User table에서 검색해서 consumer_obj_address 가져와서 사용
     consumer_obj_address="0x235c827ee71b580d8e2fb91f40a257e48c112d69dd8a1e63c365894998b7bfbf"
-
-
-
-
 
     tx_hash = contract.use_free_trial(
         consumer_obj_address=consumer_obj_address,

@@ -57,7 +57,8 @@ def create_chat(chat: chat_schemas.ChatCreate, db: Session = Depends(utils.get_d
         id= chat_message_id,
         chat_id = chat_id,
         sender_id = chat.ai_id,
-        message = "Hello! How Can I assist you?"
+        message = "Hello! How Can I assist you?",
+        tx_hash = "No Hash Required"
     )
 
     chats.create_chat_message(db=db, chat_message=chat_message)
@@ -66,7 +67,7 @@ def create_chat(chat: chat_schemas.ChatCreate, db: Session = Depends(utils.get_d
 
 
 # # 채팅 내용 생성
-@router.post("/message/{chat_id}/", response_model=base_schemas.ChatMessage)
+@router.post("/message/{chat_id}", response_model=base_schemas.ChatMessage)
 def create_chat_message(chat_message_input: chat_schemas.ChatMessageCreate, chat_id :str, db: Session = Depends(utils.get_db)):
     chat_exist = chats.check_chat_exists(db=db, chat_id=chat_id)
     if not chat_exist:
@@ -74,7 +75,7 @@ def create_chat_message(chat_message_input: chat_schemas.ChatMessageCreate, chat
 
     chat = chats.get_chat_by_id(db, chat_id=chat_id)
     ai_info = ais.get_ai_by_id(db=db, ai_id=chat.ai_id)
-    user_info = users.get_user(db =db, user_address =chat.user_address)
+    trial = contract.view_get_free_trial_count(chat.user_address)
 
     question_message_id = utils.create_user_chat_message_id(chat_id=chat_id)
 
@@ -87,36 +88,27 @@ def create_chat_message(chat_message_input: chat_schemas.ChatMessageCreate, chat
         sender_id =  chat_message_input.sender_id,
         message =  chat_message_input.message,
         prompt_tokens= token.prompt_tokens,
+        tx_hash = "No Hash Required"
     )
     chats.create_chat_message(db=db, chat_message=question_message)
 
     answer_message_id = utils.create_ai_chat_message_id(chat_id=chat_id)
 
-
-    if user_info.trial > 0 :
-        new_user_info = {**user_info, 'trial': user_info['trial'] - 1}
-        users.update_user(db, user_update = new_user_info)
-        tx_hash = contract.pay_for_usage(
-            ai_id=chat.ai_id,
-            amount=token.prompt_tokens + token.completion_tokens
-        )
-        answer_message = base_schemas.ChatMessage(
-            id =  answer_message_id,
-            chat_id =  chat_id,
-            sender_id =  chat_message_input.sender_id,
-            message =  answer,
-            completion_tokens= token.completion_tokens,
-            tx = tx_hash
-        )
+    if int(trial) > 0 :
+        print("Use Trial")
+        tx_hash = contract.use_free_trial(chat.user_address)
+        print(tx_hash)
     else:
+        print("Use Payment")
+        tx_hash = contract.pay_for_chat(ai_info.creator_address, chat.user_address, ai_info.id, token.prompt_tokens + token.completion_tokens)
+        print(tx_hash)
 
-        answer_message = base_schemas.ChatMessage(
-            id =  answer_message_id,
-            chat_id =  chat_id,
-            sender_id =  chat_message_input.sender_id,
-            message =  answer,
-            completion_tokens= token.completion_tokens,
-            tx = ""
-        )
+    answer_message = base_schemas.ChatMessage(
+        id =  answer_message_id,
+        chat_id =  chat_id,
+        sender_id =  chat_message_input.sender_id,
+        message =  answer,
+        completion_tokens= token.completion_tokens,
+        tx_hash = tx_hash)
 
     return chats.create_chat_message(db=db, chat_message=answer_message)

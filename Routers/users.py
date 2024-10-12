@@ -36,13 +36,12 @@ def add_user(user: user_schemas.UserCreate, db: Session = Depends(utils.get_db))
     
     user_dict = user.dict()  # user를 dict로 변환
     db_user = base_schemas.User(
-        **user_dict,  # 딕셔너리를 언팩
-        trial=10
+        **user_dict  # 딕셔너리를 언팩
     )
     return users.add_user(db, user=db_user)
 
 
-@router.post("/charge/{user_address}", response_model=bool)
+@router.post("/faucet/{user_address}", response_model=str)
 def charge_user(user_address: str, db: Session = Depends(utils.get_db)):
     ########### BlockChain에 충전하기 위한 로직 #################
     # 사용자의 정보를 가져오기
@@ -51,11 +50,9 @@ def charge_user(user_address: str, db: Session = Depends(utils.get_db)):
     # 사용자가 존재하지 않으면 예외 발생
     if not user_info:
         raise HTTPException(status_code=400, detail="User Doesn't Exist")
-    if user_info.trial >=5:
-        raise HTTPException(status_code=400, detail="Already Full")
     try:
-        tx_hash = contract.request_faucet(consumer_obj_address=user_info.consumer_obj_address)
-        return True  # 성공 시 True 반환
+        tx_hash = contract.request_faucet(user_address=user_info.user_address)
+        return tx_hash  # 성공 시 True 반환
     except Exception as e:
         raise HTTPException(status_code=500, detail="Failed to update user: " + str(e))
 

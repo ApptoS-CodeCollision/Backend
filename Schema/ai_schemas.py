@@ -13,6 +13,7 @@ class AICreate(BaseModel):
     rag_comments: str
     examples : str
     created_at: Optional[datetime] = None 
+    tx_hash : str
 
 
 class AIRead(base_schemas.AI):
@@ -38,6 +39,7 @@ class AIUpdate(BaseModel):
     rag_comments: Optional[str] = None
     examples : Optional[str] = None
     created_at: Optional[datetime] = None 
+    tx_hash : Optional[str] = None
 
 class AIDelete(BaseModel):
     id: str

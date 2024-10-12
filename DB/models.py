@@ -54,7 +54,7 @@ class ChatMessageTable(Base):
     prompt_tokens = Column(Float, nullable=False)
     completion_tokens = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.now(), nullable=False)  # Use DateTime instead of String
-    tx = Column(String, nullable=True)
+    tx_hash = Column(String, nullable=True)
 
 class LikeTable(Base):
     __tablename__ = "liketable"

@@ -13,8 +13,11 @@ def parse_and_get_tx_hash(output: str) -> str:
       # JSON 파싱
       parsed_output = json.loads(json_str)
       print(parsed_output)
-      # transaction_hash 값 추출
-      tx_hash = parsed_output["Result"]["transaction_hash"]
+      if parsed_output["Result"]:
+        # transaction_hash 값 추출
+        tx_hash = parsed_output["Result"]["transaction_hash"]
+      elif parsed_output["Error"]:
+        tx_hash = "Error"
   else:
       print("JSON 부분을 찾을 수 없습니다.")
 
