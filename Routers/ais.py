@@ -1,5 +1,7 @@
 from fastapi import APIRouter, Depends, FastAPI, HTTPException, Query
 from sqlalchemy.orm import Session
+from copy import deepcopy
+
 
 from DB import utils, users, ais, rags
 from Schema import base_schemas, ai_schemas
@@ -77,14 +79,8 @@ def create_ai(ai: ai_schemas.AICreate, db: Session = Depends(utils.get_db)):
     faiss_id = ai.name + "tx" + str(random.random())
     crud.add_text([ai.rag_contents], [{"source" : ai_id}], [faiss_id])
 
-    tx_hash = contract.register_ai(
-        creator_address=ai.creator_address,
-        ai_id=ai_id,
-        prompt=ai.rag_contents
-    )
-
     # RAG 테이블에 기록
-    rags.create_rag(db=db, ai_id=ai_id, comments=ai.rag_comments, tx_hash=tx_hash, faiss_id=faiss_id)
+    rags.create_rag(db=db, ai_id=ai_id, comments=ai.rag_comments, tx_hash=ai.tx_hash, faiss_id=faiss_id)
     
     return ais.create_ai(db=db, ai_id=ai_id, ai=ai)
 
@@ -102,26 +98,13 @@ def update_ai(ai_update: ai_schemas.AIUpdate, db: Session = Depends(utils.get_db
     if ai.creator_address != ai_update.creator_address:
         raise HTTPException(status_code=400, detail="You are not the owner of AI")
 
-
-
     # AI 콘텐츠가 변경된 경우 add_text 호출
     if ai_update.rag_contents != "" and ai_update.rag_contents != None:
         faiss_id = ai.name + "tx" + str(random.random())
-        embed = crud.add_text([ai_update.rag_contents], [{"source" : ai_update.id}], [faiss_id])
+        crud.add_text([ai_update.rag_contents], [{"source" : ai_update.id}], [faiss_id])
 
         ######## Todo : 어떻게 Embedding 저장할지 블록체인에 EMBEDDING 저장 #########
-
-        # tx_hash = contract.store_embedding_data(
-        #     user_address=ai.creator_address,
-        #     creator_obj_address=db_user.creator_obj_address,
-        #     ai_id=ai.id,
-        #     rag_hash="rag_hash"
-        # )
-        
-        if ai_update.rag_comments == None:
-          rags.create_rag(db=db, ai_id=ai_update.id, comments="", tx_hash="tx_hash", faiss_id=faiss_id)
-        else:
-          rags.create_rag(db=db, ai_id=ai_update.id, comments=ai_update.rag_comments, tx_hash="tx_hash", faiss_id=faiss_id)
+        rags.create_rag(db=db, ai_id=ai_update.id, comments=ai_update.rag_comments, tx_hash=ai_update.tx_hash, faiss_id=faiss_id)
     
     return ais.update_ai(db=db, ai_update=ai_update)
 
