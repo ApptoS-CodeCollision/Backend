@@ -6,6 +6,9 @@ from Schema import base_schemas, like_schemas, ai_schemas
 
 router = APIRouter()
 
+@router.get("/user/{user_address}/ai/{ai_id}", response_model=bool)
+def is_ai_liked_by_user(user_address: str, ai_id: str, db: Session = Depends(utils.get_db)):
+    return likes.is_ai_liked_by_user(db=db,user_address=user_address, ai_id=ai_id)
 
 # Create a like for an AI by a user
 @router.post("/", response_model=like_schemas.LikeCreate)
