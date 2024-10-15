@@ -97,11 +97,9 @@ def create_chat_message(chat_message_input: chat_schemas.ChatMessageCreate, chat
     if int(trial) > 0 :
         print("Use Trial")
         tx_hash = contract.use_free_trial(chat.user_address)
-        print(tx_hash)
     else:
         print("Use Payment")
         tx_hash = contract.pay_for_chat(ai_info.creator_address, chat.user_address, ai_info.id, token.prompt_tokens + token.completion_tokens)
-        print(tx_hash)
 
     answer_message = base_schemas.ChatMessage(
         id =  answer_message_id,

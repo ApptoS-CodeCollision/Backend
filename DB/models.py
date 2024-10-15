@@ -11,7 +11,6 @@ class UserTable(Base):
     country = Column(String, nullable=False)
     interest = Column(String, nullable=False)
     profile_image_url = Column(String, nullable=False)
-    trial = Column(Integer, nullable=False)
 
 class AITable(Base):
     __tablename__ = "aitable"
@@ -22,7 +21,7 @@ class AITable(Base):
     profile_image_url = Column(String, nullable=False)
     category = Column(String, nullable=False)
     introductions = Column(String, nullable=False)
-    created_at = Column(DateTime, default=datetime.now(), nullable=False)  # Use DateTime instead of String
+    created_at = Column(DateTime, default = datetime.now, nullable=False)  # Use DateTime instead of String
     examples = Column(String, nullable=True)
 
 class RAGTable(Base):
@@ -33,7 +32,7 @@ class RAGTable(Base):
     comments = Column(Text, nullable=False)
     faiss_id = Column(String, nullable=False)
     tx_hash = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.now(), nullable=False)  # Use DateTime instead of String
+    created_at = Column(DateTime, default=datetime.now, nullable=False)  # Use DateTime instead of String
 
 class ChatTable(Base):
     __tablename__ = "chattable"
@@ -53,7 +52,7 @@ class ChatMessageTable(Base):
     message = Column(Text, nullable=False)
     prompt_tokens = Column(Float, nullable=False)
     completion_tokens = Column(Float, nullable=False)
-    created_at = Column(DateTime, default=datetime.now(), nullable=False)  # Use DateTime instead of String
+    created_at = Column(DateTime, default=datetime.now, nullable=False)  # Use DateTime instead of String
     tx_hash = Column(String, nullable=True)
 
 class LikeTable(Base):
