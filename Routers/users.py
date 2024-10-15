@@ -33,12 +33,8 @@ def add_user(user: user_schemas.UserCreate, db: Session = Depends(utils.get_db))
     check_user = users.check_user_exists(db=db, user_address=user.user_address)
     if check_user:
         raise HTTPException(status_code=400, detail="User Already Exists")
-    
-    user_dict = user.dict()  # user를 dict로 변환
-    db_user = base_schemas.User(
-        **user_dict  # 딕셔너리를 언팩
-    )
-    return users.add_user(db, user=db_user)
+
+    return users.add_user(db, user=user)
 
 
 @router.post("/faucet/{user_address}", response_model=str)

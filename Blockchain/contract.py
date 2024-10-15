@@ -2,7 +2,7 @@ import subprocess
 from Blockchain import utils
 import json
 
-CONTRACT_ADDRESS = "0x9203c5491c81c1a49e8e92ee795f1e93af2c5dec259cd7cdafbab15167446668"
+CONTRACT_ADDRESS = "0x580372d1e6045e086b77adb704dc60fe227cc421d533dd7a4b265e42f72d5d44"
 MODULE = "reward"
 
 def register_user(user_address:str) -> {str, str}:
@@ -74,17 +74,18 @@ def pay_for_chat(creator_address: str, consumer_address :str, ai_id: str, amount
   print(command)
   process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
   stdout, stderr = process.communicate(input="yes\n")
-  tx_hash = utils.parse_and_get_tx_hash(stdout)
-  
   print("stdout:", stdout)
   print("stderr:", stderr)
+  tx_hash = utils.parse_and_get_tx_hash(stdout)
+  
+
 
   return tx_hash
   
 def claim_rewards_by_ai(user_address: str, ai_id: str) -> str:
   command = [
       "aptos", "move", "run",
-      "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::claim_rewards_by_ai",
+      "--function-id", f"{CONTRACT_ADDRESS}::{MODULE}::claim_ai_rewards_by_creator",
       "--args", f"address:{user_address}", f"String:{ai_id}"
   ]
   process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)

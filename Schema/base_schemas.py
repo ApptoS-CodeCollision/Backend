@@ -30,7 +30,7 @@ class AI(BaseModel):
     profile_image_url: str
     category: str
     introductions: str
-    created_at: Optional[datetime] = None 
+    created_at: datetime = None
     examples : str
 
     class Config:
